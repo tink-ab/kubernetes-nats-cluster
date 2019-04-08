@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"flag"
 	"io/ioutil"
 	"log"
@@ -12,6 +13,7 @@ import (
 var (
 	lookupName = flag.String("lookup", "nats", "Lookup name")
 	server     = flag.String("server", "http://localhost:8222", "NATS URL to query")
+	debug      = flag.Bool("debug", false, "Enable debugging.")
 )
 
 type routez struct {
@@ -22,6 +24,13 @@ func countInstancesInCluster(lookupName string) (int, error) {
 	_, srvRecords, err := net.LookupSRV("", "", lookupName)
 	if err != nil {
 		return 0, err
+	}
+	
+	if *debug {
+		fmt.Println("SRV records:")
+		for _, s := range srvRecords {
+			fmt.Println(s)
+		}
 	}
 
 	return len(srvRecords), nil
